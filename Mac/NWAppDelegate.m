@@ -26,8 +26,11 @@
     IBOutlet NSButton *_reconnectButton;
     IBOutlet NSPopUpButton *_expiryPopup;
     IBOutlet NSPopUpButton *_priorityPopup;
+    IBOutlet NSPopUpButton *_savedPayloadsPopup;
     IBOutlet NSScrollView *_logScroll;
     IBOutlet NSButton *_sanboxCheckBox;
+  
+    NSMutableArray *_savedPayloads;
 
     NWHub *_hub;
     NSDictionary *_config;
@@ -61,6 +64,8 @@
     _logField.enabledTextCheckingTypes = 0;
     [self updatePayloadCounter];
     NWLogInfo(@"");
+  
+    [self loadSavedPayloads];
 }
 
 - (void)applicationWillTerminate:(NSNotification *)notification
@@ -74,6 +79,89 @@
 - (BOOL)applicationShouldTerminateAfterLastWindowClosed:(NSApplication *)application
 {
     return YES;
+}
+
+#pragma mark - Payload management
+
+- (NSString *)savedPayloadsFilePath
+{
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString *documentsDirectory = [paths objectAtIndex:0];
+    return [documentsDirectory stringByAppendingPathComponent:@"NWPusher_payloads.dat"];
+}
+
+- (void)loadSavedPayloads
+{
+    NSString *payloadsFilePath = [self savedPayloadsFilePath];
+
+    // Load saved payloads
+    NSMutableArray *payloadsArray = [[NSMutableArray alloc] initWithContentsOfFile: payloadsFilePath];
+  
+    // If saved payloads file isn't yet created, create one from the payloads plist file
+    if(payloadsArray == nil) {
+        NSString *filePath = [[NSBundle mainBundle] pathForResource:@"payloads" ofType:@"plist"];
+        payloadsArray = [[NSMutableArray alloc] initWithContentsOfFile:filePath];
+        [payloadsArray writeToFile:payloadsFilePath atomically:YES];
+    }
+  
+    // Set _payloads
+    _savedPayloads = payloadsArray;
+  
+    [self reloadSavedPayloadsMenu];
+}
+
+- (void)reloadSavedPayloadsMenu
+{
+    // Remove all items from menu
+    [_savedPayloadsPopup removeAllItems];
+  
+    // Add items to menu
+    for (NSDictionary *pushType in _savedPayloads) {
+        NSMenuItem *item = [[NSMenuItem alloc] init];
+        item.title = [NSString stringWithFormat:@"Payload: %@",pushType[@"title"]];
+        [_savedPayloadsPopup.menu addItem:item];
+    }
+}
+
+- (IBAction)savePayload:(id)sender
+{
+    NSString *title = [self showPayloadTitleAlert];
+    if (title != nil && title.length > 0) {
+        [self savePayload:_payloadField.string withTitle:title];
+    }
+}
+
+- (NSString *)showPayloadTitleAlert
+{
+    NSAlert *alertView = [[NSAlert alloc] init];
+    [alertView setInformativeText:@"Save Payload"];
+    [alertView setMessageText:@"Input new payload title"];
+    [alertView addButtonWithTitle:@"Ok"];
+    [alertView addButtonWithTitle:@"Cancel"];
+    
+    NSTextField *input = [[NSTextField alloc] initWithFrame:NSMakeRect(0, 0, 200, 24)];
+    [input setStringValue:@""];
+    
+    [alertView setAccessoryView:input];
+    
+    [[NSRunningApplication currentApplication] activateWithOptions:NSApplicationActivateIgnoringOtherApps];
+    NSInteger button = [alertView runModal];
+    if (button == NSAlertFirstButtonReturn) {
+      return [[input stringValue] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+    }
+    return nil;
+}
+
+- (void)savePayload:(NSString *)payload withTitle:(NSString *)title
+{
+    NSDictionary *newPayload = @{@"payload": payload,
+                                 @"title": title};
+    [_savedPayloads addObject:newPayload];
+    [_savedPayloads writeToFile:[self savedPayloadsFilePath] atomically:YES];
+    
+    // Update popup menu
+    [self loadSavedPayloads];
+    [_savedPayloadsPopup selectItemAtIndex:_savedPayloads.count - 1];
 }
 
 #pragma mark - Events
@@ -260,6 +348,15 @@
         case 2: return 10;
     }
     return 0;
+}
+
+#pragma mark - NSMenuDelegate
+
+- (void)menuDidClose:(NSMenu *)menu {
+  
+    NSDictionary *pushType = _savedPayloads[_savedPayloadsPopup.indexOfSelectedItem];
+    _payloadField.string = pushType[@"payload"];
+    [self updatePayloadCounter];
 }
 
 #pragma mark - Payload
