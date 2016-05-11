@@ -48,6 +48,7 @@
 		B3F232B7189682D30043DA98 /* NWSecTools.m in Sources */ = {isa = PBXBuildFile; fileRef = B3F232A9189682D30043DA98 /* NWSecTools.m */; };
 		B3F232B8189682D30043DA98 /* NWSSLConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = B3F232AB189682D30043DA98 /* NWSSLConnection.m */; };
 		B3F232B9189682D30043DA98 /* NWSSLConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = B3F232AB189682D30043DA98 /* NWSSLConnection.m */; };
+		F2FA4A3C1CE3E46E00D0D7F2 /* payloads.plist in Resources */ = {isa = PBXBuildFile; fileRef = F2FA4A3B1CE3E46E00D0D7F2 /* payloads.plist */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -103,6 +104,7 @@
 		B3F232A9189682D30043DA98 /* NWSecTools.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NWSecTools.m; sourceTree = "<group>"; };
 		B3F232AA189682D30043DA98 /* NWSSLConnection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NWSSLConnection.h; sourceTree = "<group>"; };
 		B3F232AB189682D30043DA98 /* NWSSLConnection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NWSSLConnection.m; sourceTree = "<group>"; };
+		F2FA4A3B1CE3E46E00D0D7F2 /* payloads.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = payloads.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -160,6 +162,7 @@
 		B33FB1BA172B185C006529CE /* Mac */ = {
 			isa = PBXGroup;
 			children = (
+				F2FA4A3B1CE3E46E00D0D7F2 /* payloads.plist */,
 				B3AFABEE172C81910027346A /* config.plist */,
 				B3005FC218F43659009BB7C3 /* Application.xib */,
 				B33FB1BE172B185C006529CE /* NWAppDelegate.h */,
@@ -333,6 +336,7 @@
 				B3C6BE0115FD30E900F1F3F1 /* README.md in Resources */,
 				B33FB1C8172B185C006529CE /* icon.icns in Resources */,
 				B3005FC318F43659009BB7C3 /* Application.xib in Resources */,
+				F2FA4A3C1CE3E46E00D0D7F2 /* payloads.plist in Resources */,
 				B3B4DCD318A7998300F9F258 /* LICENSE.txt in Resources */,
 				B3AFABEF172C81910027346A /* config.plist in Resources */,
 			);
